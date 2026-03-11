@@ -119,6 +119,16 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// Delete ALL tasks (Clear Schedule)
+router.delete('/all/clear', async (req, res) => {
+  try {
+    await Task.deleteMany({});
+    res.json({ message: 'Entire schedule cleared successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Delete a task
 router.delete('/:id', async (req, res) => {
   try {

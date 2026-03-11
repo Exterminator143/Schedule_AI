@@ -29,9 +29,25 @@ const Dashboard = ({ tasks, fetchTasks }) => (
   </div>
 );
 
-const Schedule = ({ fetchTasks }) => (
+const Schedule = ({ fetchTasks, clearSchedule }) => (
   <div className="container" style={{ paddingTop: '2rem' }}>
-    <h2 style={{ marginBottom: '2rem' }}>Manage Your AI Schedule</h2>
+    <div className="flex-between" style={{ marginBottom: '2rem' }}>
+      <h2 style={{ margin: 0 }}>Manage Your AI Schedule</h2>
+      <button 
+        onClick={clearSchedule}
+        style={{ 
+          backgroundColor: '#cf6679', 
+          color: '#121212', 
+          fontWeight: 'bold',
+          padding: '0.5rem 1rem', 
+          borderRadius: '4px', 
+          border: 'none', 
+          cursor: 'pointer' 
+        }}
+      >
+        Clear Entire Schedule
+      </button>
+    </div>
     <ScheduleInput onScheduleAdded={fetchTasks} />
   </div>
 );
@@ -46,6 +62,17 @@ function App() {
       setTasks(response.data);
     } catch (error) {
       console.error('Error fetching tasks:', error);
+    }
+  };
+
+  const clearSchedule = async () => {
+    if (!window.confirm("Are you sure you want to delete all tasks? This cannot be undone.")) return;
+    try {
+      await axios.delete('https://schedule-ai.onrender.com/api/tasks/all/clear');
+      fetchTasks(); // Refresh the UI immediately
+    } catch (error) {
+      console.error('Error clearing schedule:', error);
+      alert('Failed to clear schedule.');
     }
   };
 
@@ -112,7 +139,7 @@ function App() {
       <main style={{ flex: 1 }}>
         <Routes>
           <Route path="/" element={<Dashboard tasks={tasks} fetchTasks={fetchTasks} />} />
-          <Route path="/schedule" element={<Schedule fetchTasks={fetchTasks} />} />
+          <Route path="/schedule" element={<Schedule fetchTasks={fetchTasks} clearSchedule={clearSchedule} />} />
         </Routes>
       </main>
     </div>
