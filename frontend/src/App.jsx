@@ -80,9 +80,7 @@ function App() {
   const clearSchedule = async () => {
     if (!window.confirm("Are you sure you want to delete all tasks for this date? This cannot be undone.")) return;
     try {
-      // Note: Backend clear route drops everything. We might want to clear by date eventually, 
-      // but for now, dropping everything is fine or drop by date if supported. Let's keep it dropping all for now.
-      await axios.delete('https://schedule-ai.onrender.com/api/tasks/all/clear');
+      await axios.delete(`https://schedule-ai.onrender.com/api/tasks/all/clear?date=${selectedDate}`);
       fetchTasks();
     } catch (error) {
       console.error('Error clearing schedule:', error);

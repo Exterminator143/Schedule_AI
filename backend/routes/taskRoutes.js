@@ -125,11 +125,13 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Delete ALL tasks (Clear Schedule)
+// Delete ALL tasks (Clear Schedule) - scoped by date if provided
 router.delete('/all/clear', async (req, res) => {
   try {
-    await Task.deleteMany({});
-    res.json({ message: 'Entire schedule cleared successfully' });
+    const { date } = req.query;
+    const filter = date ? { date } : {};
+    await Task.deleteMany(filter);
+    res.json({ message: 'Schedule cleared successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
