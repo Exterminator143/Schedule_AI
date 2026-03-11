@@ -16,7 +16,7 @@ const ScheduleInput = ({ onScheduleAdded }) => {
     
     try {
       // Pointing to expected local backend
-      const response = await axios.post('http://localhost:5000/api/tasks/parse-schedule', { scheduleText });
+      const response = await axios.post('https://schedule-ai.onrender.com/api/tasks/parse-schedule', { scheduleText });
       setMessage(response.data.message || 'Schedule parsed successfully!');
       setScheduleText('');
       if (onScheduleAdded) onScheduleAdded();

@@ -14,7 +14,7 @@ const TaskCard = ({ task, onTaskUpdate }) => {
   const toggleStatus = async () => {
     try {
       const newStatus = isCompleted ? 'pending' : 'completed';
-      await axios.put(`http://localhost:5000/api/tasks/${task._id}`, { status: newStatus });
+      await axios.put(`https://schedule-ai.onrender.com/api/tasks/${task._id}`, { status: newStatus });
       onTaskUpdate();
     } catch (error) {
       console.error('Failed to update task status:', error);
@@ -23,7 +23,7 @@ const TaskCard = ({ task, onTaskUpdate }) => {
 
   const handleSave = async () => {
     try {
-      await axios.put(`http://localhost:5000/api/tasks/${task._id}`, editedTask);
+      await axios.put(`https://schedule-ai.onrender.com/api/tasks/${task._id}`, editedTask);
       setIsEditing(false);
       onTaskUpdate();
     } catch (error) {

@@ -43,7 +43,7 @@ export const requestNotificationPermission = async () => {
       const token = await getToken(messaging, { vapidKey });
       if (token) {
         console.log('FCM Token:', token);
-        await axios.post('http://localhost:5000/api/tasks/register-token', { token });
+        await axios.post('https://schedule-ai.onrender.com/api/tasks/register-token', { token });
       } else {
         console.log('No registration token available.');
       }

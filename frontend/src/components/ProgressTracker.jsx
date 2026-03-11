@@ -14,7 +14,7 @@ const ProgressTracker = ({ tasks }) => {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/tasks/stats');
+      const res = await axios.get('https://schedule-ai.onrender.com/api/tasks/stats');
       setStats(res.data);
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -24,10 +24,10 @@ const ProgressTracker = ({ tasks }) => {
   const calculateAIInsights = async () => {
     setLoadingAI(true);
     try {
-      const summaryRes = await axios.get('http://localhost:5000/api/tasks/daily-summary');
+      const summaryRes = await axios.get('https://schedule-ai.onrender.com/api/tasks/daily-summary');
       setDailySummary(summaryRes.data.summary);
 
-      const suggestRes = await axios.get('http://localhost:5000/api/tasks/suggestions');
+      const suggestRes = await axios.get('https://schedule-ai.onrender.com/api/tasks/suggestions');
       setSuggestions(suggestRes.data.suggestions);
     } catch (error) {
       console.error('Error generating insights:', error);
