@@ -9,6 +9,24 @@ import TaskCard from './components/TaskCard';
 import ProgressTracker from './components/ProgressTracker';
 import { initializeFirebase, requestNotificationPermission, onMessageListener } from './firebase';
 
+// Helper to convert "9:00 AM" or "2:30 PM" into total minutes for sorting
+const parseTimeToMinutes = (timeStr) => {
+  if (!timeStr) return 0;
+  
+  // Handle basic time extraction: e.g. "9:00 AM" -> [ "9", "00", "AM" ]
+  const match = timeStr.match(/(\d+):?(\d+)?\s*(AM|PM)?/i);
+  if (!match) return 0;
+  
+  let hours = parseInt(match[1] || '0', 10);
+  const minutes = parseInt(match[2] || '0', 10);
+  const period = (match[3] || '').toUpperCase();
+  
+  if (period === 'PM' && hours < 12) hours += 12;
+  if (period === 'AM' && hours === 12) hours = 0;
+  
+  return (hours * 60) + minutes;
+};
+
 const Dashboard = ({ tasks, fetchTasks, selectedDate, setSelectedDate }) => (
   <div className="container" style={{ paddingTop: '2rem' }}>
     <div className="flex-between" style={{ marginBottom: '2rem' }}>
@@ -27,9 +45,11 @@ const Dashboard = ({ tasks, fetchTasks, selectedDate, setSelectedDate }) => (
           <p>No tasks yet. Head over to the Manage tab to add your schedule.</p>
         </div>
       ) : (
-        tasks.map(task => (
-          <TaskCard key={task._id} task={task} onTaskUpdate={fetchTasks} />
-        ))
+        [...tasks]
+          .sort((a, b) => parseTimeToMinutes(a.time) - parseTimeToMinutes(b.time))
+          .map(task => (
+            <TaskCard key={task._id} task={task} onTaskUpdate={fetchTasks} />
+          ))
       )}
     </div>
   </div>
