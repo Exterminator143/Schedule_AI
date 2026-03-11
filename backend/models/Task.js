@@ -9,6 +9,11 @@ const taskSchema = new mongoose.Schema({
     type: String,
     required: true, // e.g., "9:00 AM" or Date string
   },
+  date: {
+    type: String,
+    required: true, // "YYYY-MM-DD"
+    default: () => new Date().toISOString().split('T')[0],
+  },
   keyword: {
     type: String,
     required: false, // Core topic for research

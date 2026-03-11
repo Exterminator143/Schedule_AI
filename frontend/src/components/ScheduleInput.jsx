@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Send, Loader2 } from 'lucide-react';
 
-const ScheduleInput = ({ onScheduleAdded }) => {
+const ScheduleInput = ({ onScheduleAdded, selectedDate }) => {
   const [scheduleText, setScheduleText] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -16,7 +16,10 @@ const ScheduleInput = ({ onScheduleAdded }) => {
     
     try {
       // Pointing to expected local backend
-      const response = await axios.post('https://schedule-ai.onrender.com/api/tasks/parse-schedule', { scheduleText });
+      const response = await axios.post('https://schedule-ai.onrender.com/api/tasks/parse-schedule', { 
+        scheduleText,
+        date: selectedDate
+      });
       setMessage(response.data.message || 'Schedule parsed successfully!');
       setScheduleText('');
       if (onScheduleAdded) onScheduleAdded();

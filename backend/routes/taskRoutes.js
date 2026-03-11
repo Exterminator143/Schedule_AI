@@ -33,14 +33,18 @@ router.post('/register-token', async (req, res) => {
 // Create tasks from AI-generated schedule input
 router.post('/parse-schedule', async (req, res) => {
   try {
-    const { scheduleText } = req.body;
+    const { scheduleText, date } = req.body;
     if (!scheduleText) return res.status(400).json({ error: 'Schedule text is required' });
 
     // Parse the unstructured text into structured tasks
     const parsedTasks = await aiService.parseSchedule(scheduleText);
     
+    // Assign the requested date to all parsed tasks
+    const targetDate = date || new Date().toISOString().split('T')[0];
+    const tasksWithDate = parsedTasks.map(t => ({ ...t, date: targetDate }));
+    
     // Save all tasks to database
-    const savedTasks = await Task.insertMany(parsedTasks);
+    const savedTasks = await Task.insertMany(tasksWithDate);
     
     // Trigger background research for tasks with keywords
     savedTasks.forEach(task => {
@@ -98,10 +102,12 @@ router.get('/suggestions', async (req, res) => {
   }
 });
 
-// Get all tasks
+// Get all tasks (filtered by date if provided)
 router.get('/', async (req, res) => {
   try {
-    const tasks = await Task.find().sort({ createdAt: -1 });
+    const { date } = req.query;
+    const filter = date ? { date } : {};
+    const tasks = await Task.find(filter).sort({ createdAt: -1 });
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ error: error.message });

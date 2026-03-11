@@ -8,9 +8,20 @@ import TaskCard from './components/TaskCard';
 import ProgressTracker from './components/ProgressTracker';
 import { initializeFirebase, requestNotificationPermission, onMessageListener } from './firebase';
 
-const Dashboard = ({ tasks, fetchTasks }) => (
+const Dashboard = ({ tasks, fetchTasks, selectedDate, setSelectedDate }) => (
   <div className="container" style={{ paddingTop: '2rem' }}>
-    <h2 style={{ marginBottom: '2rem' }}>Dashboard Overview</h2>
+    <div className="flex-between" style={{ marginBottom: '2rem' }}>
+      <h2 style={{ margin: 0 }}>Dashboard Overview</h2>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <span style={{ color: 'var(--text-secondary)' }}>Showing schedule for:</span>
+        <input 
+          type="date"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          style={{ width: 'auto', padding: '0.5rem', fontWeight: 'bold', border: '1px solid var(--border-color)' }}
+        />
+      </div>
+    </div>
     
     <ProgressTracker tasks={tasks} />
 
@@ -29,10 +40,10 @@ const Dashboard = ({ tasks, fetchTasks }) => (
   </div>
 );
 
-const Schedule = ({ fetchTasks, clearSchedule }) => (
+const Schedule = ({ fetchTasks, clearSchedule, selectedDate }) => (
   <div className="container" style={{ paddingTop: '2rem' }}>
     <div className="flex-between" style={{ marginBottom: '2rem' }}>
-      <h2 style={{ margin: 0 }}>Manage Your AI Schedule</h2>
+      <h2 style={{ margin: 0 }}>Manage Specific Date: <span style={{ color: 'var(--accent-color)' }}>{selectedDate}</span></h2>
       <button 
         onClick={clearSchedule}
         style={{ 
@@ -45,20 +56,21 @@ const Schedule = ({ fetchTasks, clearSchedule }) => (
           cursor: 'pointer' 
         }}
       >
-        Clear Entire Schedule
+        Clear This Date
       </button>
     </div>
-    <ScheduleInput onScheduleAdded={fetchTasks} />
+    <ScheduleInput onScheduleAdded={fetchTasks} selectedDate={selectedDate} />
   </div>
 );
 
 function App() {
   const [tasks, setTasks] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const location = useLocation();
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get('https://schedule-ai.onrender.com/api/tasks');
+      const response = await axios.get(`https://schedule-ai.onrender.com/api/tasks?date=${selectedDate}`);
       setTasks(response.data);
     } catch (error) {
       console.error('Error fetching tasks:', error);
@@ -66,10 +78,12 @@ function App() {
   };
 
   const clearSchedule = async () => {
-    if (!window.confirm("Are you sure you want to delete all tasks? This cannot be undone.")) return;
+    if (!window.confirm("Are you sure you want to delete all tasks for this date? This cannot be undone.")) return;
     try {
+      // Note: Backend clear route drops everything. We might want to clear by date eventually, 
+      // but for now, dropping everything is fine or drop by date if supported. Let's keep it dropping all for now.
       await axios.delete('https://schedule-ai.onrender.com/api/tasks/all/clear');
-      fetchTasks(); // Refresh the UI immediately
+      fetchTasks();
     } catch (error) {
       console.error('Error clearing schedule:', error);
       alert('Failed to clear schedule.');
@@ -96,7 +110,7 @@ function App() {
     };
     
     listenForMessages();
-  }, []);
+  }, [selectedDate]); // Refetch when the selected date changes
 
   return (
     <div className="flex-col" style={{ minHeight: '100vh' }}>
@@ -138,8 +152,8 @@ function App() {
 
       <main style={{ flex: 1 }}>
         <Routes>
-          <Route path="/" element={<Dashboard tasks={tasks} fetchTasks={fetchTasks} />} />
-          <Route path="/schedule" element={<Schedule fetchTasks={fetchTasks} clearSchedule={clearSchedule} />} />
+          <Route path="/" element={<Dashboard tasks={tasks} fetchTasks={fetchTasks} selectedDate={selectedDate} setSelectedDate={setSelectedDate} />} />
+          <Route path="/schedule" element={<Schedule fetchTasks={fetchTasks} clearSchedule={clearSchedule} selectedDate={selectedDate} />} />
         </Routes>
       </main>
     </div>
