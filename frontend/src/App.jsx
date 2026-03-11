@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Calendar, LayoutDashboard, Settings } from 'lucide-react';
 
 import ScheduleInput from './components/ScheduleInput';
+import MonthCalendar from './components/MonthCalendar';
 import TaskCard from './components/TaskCard';
 import ProgressTracker from './components/ProgressTracker';
 import { initializeFirebase, requestNotificationPermission, onMessageListener } from './firebase';
@@ -12,16 +13,10 @@ const Dashboard = ({ tasks, fetchTasks, selectedDate, setSelectedDate }) => (
   <div className="container" style={{ paddingTop: '2rem' }}>
     <div className="flex-between" style={{ marginBottom: '2rem' }}>
       <h2 style={{ margin: 0 }}>Dashboard Overview</h2>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <span style={{ color: 'var(--text-secondary)' }}>Showing schedule for:</span>
-        <input 
-          type="date"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          style={{ width: 'auto', padding: '0.5rem', fontWeight: 'bold', border: '1px solid var(--border-color)' }}
-        />
-      </div>
+      <span style={{ color: 'var(--text-secondary)' }}>Select a date to view its schedules</span>
     </div>
+    
+    <MonthCalendar selectedDate={selectedDate} onSelectDate={setSelectedDate} />
     
     <ProgressTracker tasks={tasks} />
 

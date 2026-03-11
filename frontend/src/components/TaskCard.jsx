@@ -8,6 +8,7 @@ const TaskCard = ({ task, onTaskUpdate }) => {
   const [editedTask, setEditedTask] = useState({
     title: task.title,
     time: task.time,
+    date: task.date || new Date().toISOString().split('T')[0],
     keyword: task.keyword || ''
   });
 
@@ -48,6 +49,12 @@ const TaskCard = ({ task, onTaskUpdate }) => {
               onChange={e => setEditedTask({...editedTask, time: e.target.value})}
               placeholder="Time (e.g. 9:00 AM)"
               style={{ flex: 1 }}
+            />
+            <input 
+              type="date" 
+              value={editedTask.date} 
+              onChange={e => setEditedTask({...editedTask, date: e.target.value})}
+              style={{ flex: 1, colorScheme: 'dark' }}
             />
             <input 
               type="text" 
